@@ -22,9 +22,14 @@ public interface UserMapper {
 	@Select("SELECT * FROM user_info")
 	List<UserInfo> getAllUsers();
 
-	@Insert("INSERT INTO user_info (name, email,password,roles)" + " VALUES (#{name}, #{email}, #{password}, #{roles})")
+//	@Insert("INSERT INTO user_info (name, email,password,roles)" + " VALUES (#{name}, #{email}, #{password}, #{roles})")
+//	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+//	void insertUser(UserInfo user);
+	
+	@Insert("INSERT INTO user_info (name, email, password, roles) VALUES (#{name}, #{email}, #{password}, #{roles})")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	void insertUser(UserInfo user);
+
 
 	
 
