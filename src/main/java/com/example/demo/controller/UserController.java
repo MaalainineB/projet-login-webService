@@ -1,11 +1,17 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,13 +61,13 @@ public class UserController {
 //		return username;
 //	} 
 
-	@GetMapping("/userdetails")
-	@PreAuthorize("hasAuthority('ROLE_USER')")
-	public UserInfoDto findByUsername(HttpServletRequest request) {
-		String authorizationHeader = request.getHeader("Authorization");
+	@GetMapping("/userdetails") //gère une requête GET à l'URL "/userdetails"
+	@PreAuthorize("hasAuthority('ROLE_USER')") // une autorisation requise pour accéder à cette méthode.
+	public UserInfoDto findByUsername(HttpServletRequest request) { //accepte un objet HttpServletRequest comme argument, ce qui lui permet d'accéder aux informations de la requête HTTP entrante.
+		String authorizationHeader = request.getHeader("Authorization"); //extraire l'en-tête "Authorization" de la requête HTTP 
 		if (authorizationHeader != null & authorizationHeader.startsWith("Bearer ")) {
 			String token = authorizationHeader.substring(7);
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); //pour obtenir l'objet d'authentification actuel. Cet objet d'authentification devrait contenir des informations sur l'utilisateur actuellement authentifié.
 			String username = authentication.getName();
 			UserInfo existingUserInfo = service.loadByUsername(username);
 			UserInfoDto existingUserDto = dtoMapper.toDto(existingUserInfo);
@@ -87,6 +93,24 @@ public class UserController {
 		} else {
 			throw new UsernameNotFoundException("invalid user request !");
 		}
+	}
+	
+	@PostMapping("/refreshToken")
+	public String refreshToken(HttpServletRequest request) {
+		System.err.println("je suis là");
+		String authorizationHeader = request.getHeader("Authorization"); //extraire l'en-tête "Authorization" de la requête HTTP 
+			String currentToken = authorizationHeader.substring(7);
+			String currentUsername = jwtService.extractUsername(currentToken);
+			Boolean isTokentValid = jwtService.validateTokenButExpird(currentToken, currentUsername);
+			if (isTokentValid) {
+	            // Générez un nouveau token JWT avec la même identité
+//	            UsernamePasswordAuthenticationToken newToken = new UsernamePasswordAuthenticationToken(existingUserDetail.getUsername(),existingUserDetail.getPassword());
+	            String newToken = jwtService.generateToken(currentUsername);
+	            return newToken;
+			} else {
+	            return "Le token actuel est invalide.";
+			}
+		
 	}
 
 }
