@@ -8,7 +8,7 @@ import com.example.demo.entity.UserInfo;
 public class UserInfoMapper {
 
 	public UserInfoDto toDto(UserInfo userInfo) {
-		return new UserInfoDto(userInfo.getId(), userInfo.getEmail(), userInfo.getPassword(),
+		return new UserInfoDto(userInfo.getId(), userInfo.getName(), userInfo.getEmail(),
 				userInfo.getRoles());
 	}
 
