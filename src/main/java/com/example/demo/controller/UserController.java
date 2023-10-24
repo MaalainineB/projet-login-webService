@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -84,16 +85,29 @@ public class UserController {
 		return "Welcome to Admin Profile";
 	}
 
+//	@PostMapping("/generateToken")
+//	public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+//		Authentication authentication = authenticationManager.authenticate(
+//				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+//		if (authentication.isAuthenticated()) {
+//			return jwtService.generateToken(authRequest.getUsername());
+//		} else {
+//			throw new UsernameNotFoundException("invalid user request !");
+//		}
+//	}
+	
 	@PostMapping("/generateToken")
 	public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-		if (authentication.isAuthenticated()) {
-			return jwtService.generateToken(authRequest.getUsername());
-		} else {
-			throw new UsernameNotFoundException("invalid user request !");
-		}
+	    try {
+	        Authentication authentication = authenticationManager.authenticate(
+	            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+
+	        return jwtService.generateToken(authRequest.getUsername());
+	    } catch (AuthenticationException e) {
+	        throw new UsernameNotFoundException("Nom d'utilisateur ou mot de passe incorrect");
+	    }
 	}
+
 	
 	@PostMapping("/refreshToken")
 	public String refreshToken(HttpServletRequest request) {
