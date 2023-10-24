@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import java.util.Optional;
 
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -57,6 +59,20 @@ public class UserInfoService implements UserDetailsService {
 					.orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", name)));
 		}
 		return null;
+	}
+
+
+
+	public String decode(String encodedPassword) {
+        byte[] decodedBytes = Base64.decodeBase64(encodedPassword.getBytes());
+		return new String(decodedBytes);
+	}
+
+
+
+	public String encode(String rawPassword) {
+        byte[] encodedPassword = Base64.encodeBase64(rawPassword.getBytes());
+		return new String(encodedPassword);
 	}
 
 }

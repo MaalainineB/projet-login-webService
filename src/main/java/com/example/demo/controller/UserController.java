@@ -1,20 +1,14 @@
 package com.example.demo.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.codec.binary.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -99,8 +93,10 @@ public class UserController {
 	@PostMapping("/generateToken")
 	public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
 	    try {
+	        String decodePassword = service.decode(authRequest.getPassword());
+	        
 	        Authentication authentication = authenticationManager.authenticate(
-	            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+	            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), decodePassword));
 
 	        return jwtService.generateToken(authRequest.getUsername());
 	    } catch (AuthenticationException e) {

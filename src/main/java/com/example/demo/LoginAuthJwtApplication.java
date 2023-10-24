@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.example.demo.service.UserInfoService;
 
 @SpringBootApplication
 public class LoginAuthJwtApplication implements WebMvcConfigurer,CommandLineRunner {
@@ -14,7 +17,7 @@ public class LoginAuthJwtApplication implements WebMvcConfigurer,CommandLineRunn
 //    private static Logger logger = Logger.getLogger(LoginAuthJwtApplication.class);
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private UserInfoService service;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(LoginAuthJwtApplication.class, args);
@@ -32,8 +35,9 @@ public class LoginAuthJwtApplication implements WebMvcConfigurer,CommandLineRunn
 	@Override
 	public void run(String... args) throws Exception {
 		String pass = "1234";
-		System.err.println(passwordEncoder.encode(pass));
-		
+		System.err.println(service.encode(pass));
+		System.err.println(service.decode(service.encode(pass)));
+
 	}
 
 }
